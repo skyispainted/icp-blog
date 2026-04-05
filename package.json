@@ -2,7 +2,9 @@
   "name": "icp-blog",
   "version": "1.0.0",
   "scripts": {
-    "minify": "node minify.js"
+    "minify": "node minify.js",
+    "serve": "npx serve .",
+    "preview": "npm run minify && npm run serve"
   },
   "devDependencies": {
     "html-minifier-terser": "^7.2.0",

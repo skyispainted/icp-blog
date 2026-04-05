@@ -59,9 +59,9 @@ async function minifyHtml() {
             removeEmptyAttributes: true,
             removeOptionalTags: false,
             collapseBooleanAttributes: true,
-            useShortDoctype: true,
-            removeAttributeQuotes: true,
-            removeTagWhitespace: true,
+            useShortDoctype: false,
+            removeAttributeQuotes: false,
+            removeTagWhitespace: false,
             sortAttributes: true,
             sortClassName: true
         });
