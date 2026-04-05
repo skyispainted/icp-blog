@@ -7,49 +7,35 @@ const path = require('path');
 const inputFile = path.join(__dirname, 'index.html');
 const outputFile = path.join(__dirname, 'index.min.html');
 
-async function minifyJs(code) {
-    const result = await terserMinify(code, {
-        compress: {
-            drop_console: false,
-            dead_code: true,
-            conditionals: true,
-            evaluate: true,
-            sequences: true,
-            unused: true
-        },
-        mangle: true,
-        format: {
-            comments: false
-        }
-    });
-    return result.code;
-}
+const cleanCss = new CleanCSS({ level: 2, compatibility: '*' });
 
 async function minifyHtml() {
     try {
         let html = fs.readFileSync(inputFile, 'utf8');
 
-        // 1. 压缩内联CSS
-        const cleanCss = new CleanCSS({
-            level: 2,
-            compatibility: '*',
-            format: false
+        // 1. 压缩CSS
+        html = html.replace(/<style>([\s\S]*?)<\/style>/gi, (match, css) => {
+            const result = cleanCss.minify(css);
+            return `<style>${result.styles}</style>`;
         });
 
-        html = html.replace(/<style>([\s\S]*?)<\/style>/gi, async (match, css) => {
-            const minifiedCss = cleanCss.minify(css).styles;
-            return `<style>${minifiedCss}</style>`;
-        });
-
-        // 2. 压缩内联JS
-        html = await html.replaceAsync(/<script>([\s\S]*?)<\/script>/gi, async (match, js) => {
-            try {
-                const minifiedJs = await minifyJs(js);
-                return `<script>${minifiedJs}</script>`;
-            } catch (e) {
-                return match; // 如果压缩失败，保留原样
+        // 2. 压缩JS
+        const scriptMatches = html.match(/<script>([\s\S]*?)<\/script>/gi);
+        if (scriptMatches) {
+            for (const match of scriptMatches) {
+                const js = match.replace(/<script>|<\/script>/gi, '');
+                try {
+                    const minified = await terserMinify(js, {
+                        compress: { dead_code: true, unused: true },
+                        mangle: true,
+                        format: { comments: false }
+                    });
+                    html = html.replace(match, `<script>${minified.code}</script>`);
+                } catch (e) {
+                    console.log('JS压缩失败，保留原样');
+                }
             }
-        });
+        }
 
         // 3. 压缩HTML
         const minified = await minify(html, {
@@ -57,13 +43,7 @@ async function minifyHtml() {
             removeComments: true,
             removeRedundantAttributes: true,
             removeEmptyAttributes: true,
-            removeOptionalTags: false,
-            collapseBooleanAttributes: true,
-            useShortDoctype: false,
-            removeAttributeQuotes: false,
-            removeTagWhitespace: false,
-            sortAttributes: true,
-            sortClassName: true
+            collapseBooleanAttributes: true
         });
 
         fs.writeFileSync(outputFile, minified, 'utf8');
@@ -73,28 +53,12 @@ async function minifyHtml() {
         const savedPercent = ((originalSize - minifiedSize) / originalSize * 100).toFixed(2);
 
         console.log(`✅ HTML已最小化`);
-        console.log(`   原文件: ${inputFile} (${(originalSize / 1024).toFixed(2)} KB)`);
-        console.log(`   输出: ${outputFile} (${(minifiedSize / 1024).toFixed(2)} KB)`);
+        console.log(`   原文件: ${(originalSize / 1024).toFixed(2)} KB`);
+        console.log(`   输出: ${(minifiedSize / 1024).toFixed(2)} KB`);
         console.log(`   减少: ${savedPercent}%`);
     } catch (err) {
-        console.error('❌ 错误:', err.message);
+        console.error('❌ 错误:', err);
     }
 }
-
-// 为String添加replaceAsync方法
-String.prototype.replaceAsync = async function(re, asyncCb) {
-    const matches = [];
-    this.replace(re, (match, ...args) => {
-        matches.push({ match, args, offset: args[args.length - 2] });
-        return match;
-    });
-
-    let result = this;
-    for (const m of matches.reverse()) {
-        const replacement = await asyncCb(m.match, ...m.args);
-        result = result.slice(0, m.offset) + replacement + result.slice(m.offset + m.match.length);
-    }
-    return result;
-};
 
 minifyHtml();
