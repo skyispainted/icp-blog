@@ -1,0 +1,1558 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    <title>Claude Code 技术博客 - AI编程实战经验分享</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="description" content="Claude Code技术博客 - 分享Claude Code、Subagent、Skills、MCP等AI编程工具的实战经验与使用心得" />
+    <meta name="keywords" content="Claude Code, AI编程, Subagent, Skills, MCP, AI Agent, 技术博客" />
+    <!-- External Fonts from Google Fonts CDN -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" />
+    <!-- FontAwesome from BootCDN -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+/*
+    Modern Tech Blog Style
+    Rich colors with gradient accents
+*/
+
+/* Color Variables */
+:root {
+    --primary: #6366f1;       /* Indigo */
+    --primary-light: #818cf8;
+    --secondary: #ec4899;      /* Pink */
+    --accent-1: #f59e0b;       /* Amber */
+    --accent-2: #10b981;       /* Emerald */
+    --accent-3: #3b82f6;       /* Blue */
+    --accent-4: #8b5cf6;       /* Violet */
+    --accent-5: #ef4444;       /* Red */
+    --dark: #1e293b;
+    --gray: #64748b;
+    --light: #f8fafc;
+}
+
+/* Reset */
+*, *:before, *:after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body { line-height: 1.75em; }
+
+/* Typography */
+body {
+    font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16pt;
+    color: #475569;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    background-attachment: fixed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #1e293b;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 1em;
+}
+
+h2 { font-size: 1.75em; text-align: center; }
+h3 { font-size: 1.25em; text-transform: none; }
+h5 { font-size: 1em; text-transform: none; letter-spacing: 0; color: #334155; }
+
+p { margin: 0 0 1.5em 0; line-height: 1.75em; }
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: dotted 1px var(--primary);
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+a:hover { border-bottom-color: transparent; color: var(--primary-light); }
+
+strong { font-weight: 600; color: #334155; }
+
+ul, ol { margin: 0 0 1.5em 0; padding-left: 1.5em; }
+li { margin-bottom: 0.5em; }
+
+/* Container */
+.container {
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 0 2em;
+}
+
+.container.medium { max-width: 800px; }
+
+/* Header with Gradient */
+#header {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+    color: rgba(255, 255, 255, 0.95);
+    padding: 5em 0 7em 0;
+    text-align: center;
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+    margin-bottom: -2em;
+}
+
+#header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+#header .logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, var(--accent-1) 0%, #f97316 100%);
+    border-radius: 20px;
+    color: #fff;
+    font-size: 2.2em;
+    margin-bottom: 1em;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 10px 40px rgba(245, 158, 11, 0.3);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+#header .logo:hover {
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 15px 50px rgba(245, 158, 11, 0.4);
+}
+
+#header h1 {
+    color: #ffffff;
+    font-size: 2.8em;
+    margin: 0 0 0.3em 0;
+    letter-spacing: 0.05em;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+}
+
+#header p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2em;
+    margin: 0;
+}
+
+#header a { color: rgba(255, 255, 255, 0.95); border-bottom-color: rgba(255, 255, 255, 0.4); }
+#header a:hover { color: var(--accent-1); }
+
+/* Navigation */
+#nav {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1em 0;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+#nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    gap: 0.5em;
+}
+
+#nav li { margin: 0; }
+#nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.6em 1.5em;
+    color: #475569;
+    border-bottom: none;
+    font-weight: 600;
+    border-radius: 25px;
+    transition: all 0.3s;
+}
+
+#nav a i {
+    font-size: 0.9em;
+}
+
+#nav a:hover {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+#nav a.active {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+/* Main Content */
+#main {
+    background: transparent;
+    padding: 4em 0;
+}
+
+/* Intro Section */
+#main > header.major {
+    text-align: center;
+    padding: 2em 0 3em 0;
+    margin-bottom: 3em;
+}
+
+#main > header.major h2 {
+    font-size: 2em;
+    color: #1e293b;
+    margin: 0;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Feature Sections with Different Colors */
+.feature-section {
+    display: flex;
+    align-items: center;
+    gap: 2.5em;
+    margin-bottom: 2em;
+    padding: 1.5em 2em;
+    border-radius: 16px;
+    transition: all 0.3s;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+}
+
+.feature-section:hover {
+    background: #fff;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    transform: translateX(10px);
+}
+
+.feature-section:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.feature-section:nth-child(even):hover {
+    transform: translateX(-10px);
+}
+
+/* Different colored icons */
+.feature-section .icon-box {
+    flex: 0 0 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.8em;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    border-bottom: none;
+}
+
+.feature-section:nth-child(1) .icon-box {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
+}
+
+.feature-section:nth-child(2) .icon-box {
+    background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.35);
+}
+
+.feature-section:nth-child(3) .icon-box {
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35);
+}
+
+.feature-section .icon-box:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.feature-section .content { flex: 1; }
+.feature-section h3 { color: #1e293b; margin-bottom: 0.3em; font-size: 1.2em; }
+.feature-section p { color: #64748b; margin: 0; font-size: 0.95em; }
+
+/* Article Cards */
+.articles-grid {
+    display: grid;
+    gap: 2em;
+}
+
+.article-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2em;
+    transition: all 0.3s;
+    border: 1px solid #e2e8f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.article-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    border-color: transparent;
+}
+
+.article-card:hover::before {
+    opacity: 1;
+}
+
+.article-card:nth-child(2)::before {
+    background: linear-gradient(180deg, var(--secondary) 0%, #fb7185 100%);
+}
+
+.article-card:nth-child(3)::before {
+    background: linear-gradient(180deg, var(--accent-1) 0%, #fbbf24 100%);
+}
+
+.article-card:nth-child(4)::before {
+    background: linear-gradient(180deg, var(--accent-2) 0%, #34d399 100%);
+}
+
+.article-card:nth-child(5)::before {
+    background: linear-gradient(180deg, var(--accent-4) 0%, #a78bfa 100%);
+}
+
+.article-card h3 {
+    color: #1e293b;
+    margin-bottom: 0.5em;
+    font-size: 1.3em;
+}
+
+.article-card h3 a {
+    color: inherit;
+    border-bottom: none;
+}
+
+.article-card h3 a:hover { color: var(--primary); }
+
+/* Meta with colored icons */
+.article-card .meta {
+    color: #94a3b8;
+    font-size: 0.85em;
+    margin-bottom: 1em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2em;
+}
+
+.article-card .meta i {
+    margin-right: 0.3em;
+}
+
+.article-card .meta span:nth-child(1) i { color: var(--accent-5); }
+.article-card .meta span:nth-child(2) i { color: var(--accent-3); }
+.article-card .meta span:nth-child(3) i { color: var(--accent-2); }
+
+.article-card .summary {
+    color: #64748b;
+    margin-bottom: 1em;
+}
+
+/* Expand Button with Gradient */
+.btn-expand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+    padding: 0.6em 1.5em;
+    border-radius: 25px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.95em;
+}
+
+.btn-expand::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.8em;
+    transition: transform 0.3s;
+}
+
+.btn-expand:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
+}
+
+.article-card .full-content {
+    display: none;
+    padding-top: 1.5em;
+    border-top: 2px solid #e2e8f0;
+    margin-top: 1.5em;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.article-card .full-content.show { display: block; }
+
+.article-card .full-content h5 {
+    color: #1e293b;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.article-card .full-content h5::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 1em;
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+.article-card .full-content ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.article-card .full-content ul li {
+    position: relative;
+    padding-left: 1.5em;
+}
+
+.article-card .full-content ul li::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    color: var(--accent-2);
+    font-size: 0.85em;
+}
+
+.btn-collapse {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    background: #e2e8f0;
+    color: #475569;
+    padding: 0.5em 1.2em;
+    border-radius: 20px;
+    font-size: 0.9em;
+    cursor: pointer;
+    margin-top: 1em;
+    border: none;
+    transition: all 0.3s;
+}
+
+.btn-collapse:hover {
+    background: #cbd5e1;
+}
+
+/* Sidebar */
+#sidebar {
+    background: #fff;
+    padding: 2em;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+#sidebar h4 {
+    color: #1e293b;
+    font-size: 1em;
+    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+    border-bottom: 3px solid;
+    border-image: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%) 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+#sidebar ul { list-style: none; padding: 0; margin: 0 0 1.5em 0; }
+#sidebar li { margin-bottom: 0.5em; }
+
+#sidebar .category-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.7em 0;
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s;
+}
+
+#sidebar .category-list li:hover {
+    padding-left: 0.5em;
+}
+
+#sidebar .category-list a { border-bottom: none; color: #475569; }
+#sidebar .category-list a:hover { color: var(--primary); }
+
+#sidebar .badge {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+    padding: 0.2em 0.7em;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+#sidebar .tags { display: flex; flex-wrap: wrap; gap: 0.5em; }
+
+#sidebar .tag {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.4em 1em;
+    border-radius: 20px;
+    font-size: 0.85em;
+    border-bottom: none;
+    transition: all 0.2s;
+}
+
+#sidebar .tag:nth-child(1):hover { background: var(--primary); color: #fff; }
+#sidebar .tag:nth-child(2):hover { background: var(--secondary); color: #fff; }
+#sidebar .tag:nth-child(3):hover { background: var(--accent-1); color: #fff; }
+#sidebar .tag:nth-child(4):hover { background: var(--accent-2); color: #fff; }
+#sidebar .tag:nth-child(5):hover { background: var(--accent-4); color: #fff; }
+
+#sidebar .links-list a {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.5em 0;
+    border-bottom: none;
+    color: #475569;
+    transition: all 0.2s;
+}
+
+#sidebar .links-list a:hover {
+    color: var(--primary);
+    padding-left: 0.5em;
+}
+
+#sidebar .links-list a::before {
+    content: '\f0c1';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--accent-3);
+    font-size: 0.9em;
+}
+
+/* Two Column Layout */
+.two-columns {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 2.5em;
+}
+
+@media (max-width: 900px) {
+    .two-columns { grid-template-columns: 1fr; }
+    #sidebar { order: -1; }
+    .feature-section { flex-direction: column !important; text-align: center; }
+    .feature-section .icon-box { margin-bottom: 1em; }
+    .feature-section:hover { transform: none !important; }
+}
+
+/* Footer with Gradient */
+#footer {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 5em 0 3em 0;
+    text-align: center;
+    position: relative;
+    clip-path: polygon(0 12%, 100% 0, 100% 100%, 0 100%);
+    margin-top: -2em;
+}
+
+#footer h2 {
+    color: #ffffff;
+    font-size: 1.8em;
+    margin-bottom: 0.5em;
+}
+
+#footer p { color: rgba(255, 255, 255, 0.8); }
+
+#footer a { color: rgba(255, 255, 255, 0.95); border-bottom-color: rgba(255, 255, 255, 0.3); }
+#footer a:hover { color: var(--accent-1); border-bottom-color: transparent; }
+
+#footer .copyright {
+    margin-top: 2.5em;
+    padding-top: 1.5em;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+#footer .copyright p { margin: 0.3em 0; }
+
+/* Scroll to top button */
+#scroll-top {
+    position: fixed;
+    bottom: 2em;
+    right: 2em;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+    font-size: 1.2em;
+    z-index: 1000;
+    box-shadow: 0 5px 25px rgba(99, 102, 241, 0.4);
+}
+
+#scroll-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+#scroll-top:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    #header { padding: 4em 0 6em 0; }
+    #header h1 { font-size: 1.8em; }
+    #header p { font-size: 1em; }
+    #nav ul { gap: 0; }
+    #nav a { padding: 0.5em 1em; font-size: 0.85em; }
+    #nav a i { display: none; }
+    body { font-size: 14pt; }
+    .feature-section { padding: 1em; }
+}
+
+/* Sections for navigation targets */
+section { scroll-margin-top: 80px; }
+
+/* Code blocks */
+pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 1em;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.9em;
+}
+
+code {
+    background: #f1f5f9;
+    color: var(--accent-5);
+    padding: 0.2em 0.5em;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+}
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div id="header">
+        <div class="container">
+            <span class="logo icon fa fa-code" onclick="scrollToTop()"></span>
+            <h1>Claude Code 技术博客</h1>
+            <p>分享Claude Code实战经验与AI编程心得</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="nav">
+        <div class="container">
+            <ul>
+                <li><a href="#home" class="nav-link active" onclick="setActiveNav(this)"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="#articles" class="nav-link" onclick="setActiveNav(this)"><i class="fas fa-book-open"></i> 技术分享</a></li>
+                <li><a href="#about" class="nav-link" onclick="setActiveNav(this)"><i class="fas fa-user"></i> 关于我</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <div id="main">
+        <div class="container">
+
+            <!-- Intro -->
+            <section id="home">
+                <header class="major">
+                    <h2>探索Claude Code的无限可能</h2>
+                </header>
+
+                <!-- Feature Highlights -->
+                <div class="feature-section" onclick="scrollToSection('articles')">
+                    <a href="#articles" class="icon-box" onclick="event.preventDefault(); scrollToSection('articles')">
+                        <i class="fas fa-terminal"></i>
+                    </a>
+                    <div class="content">
+                        <h3>Claude Code入门实战</h3>
+                        <p>从基本操作到高级功能，记录使用Claude Code命令行工具的真实体验与踩坑经验。</p>
+                    </div>
+                </div>
+
+                <div class="feature-section" onclick="scrollToSection('articles')">
+                    <a href="#articles" class="icon-box" onclick="event.preventDefault(); scrollToSection('articles')">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                    </a>
+                    <div class="content">
+                        <h3>Skills系统深度解析</h3>
+                        <p>让Claude从通用AI变成专业AI团队，通过自定义技能扩展Claude Code的能力边界。</p>
+                    </div>
+                </div>
+
+                <div class="feature-section" onclick="scrollToSection('articles')">
+                    <a href="#articles" class="icon-box" onclick="event.preventDefault(); scrollToSection('articles')">
+                        <i class="fas fa-robot"></i>
+                    </a>
+                    <div class="content">
+                        <h3>Subagent实战应用</h3>
+                        <p>打造专属AI团队，让Claude变成项目经理，把不同任务外包给专业的AI助手。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Articles with Sidebar -->
+            <section id="articles">
+                <div class="two-columns">
+
+                    <!-- Articles -->
+                    <div class="articles-grid">
+
+                        <article class="article-card">
+                            <h3><a href="#" onclick="toggleArticle(1); return false;">Claude Code初体验：从入门到上手的实战笔记</a></h3>
+                            <div class="meta">
+                                <span><i class="far fa-calendar"></i> 2026-03-15</span>
+                                <span><i class="far fa-folder"></i> 技术教程</span>
+                                <span><i class="far fa-clock"></i> 阅读约10分钟</span>
+                            </div>
+                            <p class="summary">记录我使用Claude Code命令行工具的真实体验，从基本操作到高级功能，分享踩过的坑和实用的技巧...</p>
+                            <button class="btn-expand" onclick="toggleArticle(1)">展开全文</button>
+                            <div class="full-content" id="article-1">
+                                <p>之前一直在用Claude的网页版，直到最近发现了Claude Code——一个命令行版本的Claude。用了两周之后，我不得不说：这东西改变了我写代码的方式。</p>
+
+                                <h5>安装与登录</h5>
+                                <p>安装很简单，npm一键搞定：</p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">npm install -g @anthropic-ai/claude-code</pre>
+                                </div>
+                                <p>Windows用户注意：用PowerShell，不要用cmd，否则会有编码问题。</p>
+
+                                <p>安装完成后，输入<code>claude</code>就能启动。第一次使用需要登录，输入<code>/login</code>，会打开浏览器让你授权。</p>
+
+                                <h5>三种执行模式：确认、默认确认、规划模式</h5>
+                                <p>这是Claude Code最核心的设计。它有三种处理代码的方式：</p>
+
+                                <ul>
+                                    <li><strong>确认模式</strong>：每一句代码都要你同意才执行，适合新手或重要项目</li>
+                                    <li><strong>默认确认模式</strong>：自动执行，不需要一句句确认，适合快速迭代</li>
+                                    <li><strong>规划模式</strong>：只思考不写代码，适合前期设计</li>
+                                </ul>
+
+                                <p>切换方式很简单：<code>Shift + Tab</code>。</p>
+
+                                <p>我的建议：刚开始用确认模式，熟悉之后用默认确认模式提升效率，做架构设计时用规划模式。</p>
+
+                                <h5>一个真实的工作流</h5>
+                                <p>假设我要创建一个新项目。首先启动Claude Code：</p>
+
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">claude
+> 我想创建一个React+TypeScript项目，带ESLint配置</pre>
+                                </div>
+
+                                <p>Claude会自动执行create-react-app或vite命令，安装依赖，配置ESLint。整个过程可能10分钟，你自己做可能要半小时。</p>
+
+                                <p>如果你想让Claude"放飞自我"，一键同意所有操作：</p>
+                                <div style="background:#fff0f0; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">claude --dangerously-skip-permission</pre>
+                                </div>
+                                <p>⚠️ 但要小心，这个模式下Claude可能会做出一些你不预期的操作。</p>
+
+                                <h5>回滚功能：按两下ESC</h5>
+                                <p>Claude Code有个很贴心的功能：回滚。</p>
+
+                                <p>如果Claude改坏了代码，你可以输入<code>/rewind</code>或者按两下ESC，进入回滚界面。它会列出所有的修改记录，你可以选择回滚到任意一个状态。</p>
+
+                                <p style="background:#fff8e6; padding:0.8em; border-radius:4px; font-size:0.9em;"><strong>注意</strong>：回滚只会回滚写入的代码，不会回滚终端命令生成的文件。比如npm install创建的node_modules，回滚是删不掉的。</p>
+
+                                <h5>MCP集成：让Claude能"看见"设计稿</h5>
+                                <p>这是我最近在研究的高级功能。MCP（Model Context Protocol）可以让Claude Code连接外部工具。</p>
+
+                                <p>比如我们想用Figma的设计稿生成前端代码，可以这样配置：</p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">claude mcp add --transport http figma https://mcp.figma.com/mcp</pre>
+                                </div>
+                                <p>然后输入<code>/mcp</code>就可以选择使用Figma工具了。</p>
+
+                                <h5>上下文管理：别让Token爆炸</h5>
+                                <p>聊多了之后，上下文会越来越长，Token消耗也会爆炸。这时候可以用：</p>
+                                <ul>
+                                    <li><code>/compact</code> - 总结前面的对话，压缩上下文</li>
+                                    <li><code>/clear</code> - 清空所有上下文，从头开始</li>
+                                </ul>
+
+                                <p>我通常会这样：一个功能开发完成后，执行<code>/compact</code>，让Claude记住核心内容，但不要重复的细节。</p>
+
+                                <h5>CLAUDE.md：让Claude记住你的规范</h5>
+                                <p>如果你想让Claude每次都知道你的代码风格、项目规范，可以创建一个<code>CLAUDE.md</code>文件：</p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;"># 项目规范
+- 使用函数式组件，不要用class组件
+- 所有变量用const，避免let
+- 样式使用Tailwind CSS
+- 测试用Jest + React Testing Library</pre>
+                                </div>
+                                <p>输入<code>/init</code>可以自动生成这个文件，然后你可以根据项目需求修改。</p>
+
+                                <h5>Hooks：自动化你的工作流</h5>
+                                <p>Hooks是一个高级功能，允许你在Claude执行命令前后自动运行一段脚本。</p>
+
+                                <p>比如我想让Claude每次修改代码后自动格式化：</p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">输入 /hooks
+选择 "Create new hook"
+选择触发时机：Write|Edit
+输入命令：jq -r '.tool_input.file_path' | xargs prettier --write</pre>
+                                </div>
+                                <p>这样每次Claude创建或编辑文件后，都会自动运行prettier格式化代码。</p>
+
+                                <h5>Subagent：让Claude变成项目经理</h5>
+                                <p>这是Claude Code最近推出的功能，也是我最喜欢的。Subagent就像是给Claude请的临时工，每个临时工只干一件事。</p>
+
+                                <p>比如代码审查这种事，其实不需要在主对话里做。你可以创建一个"代码审查专员"Subagent：</p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">输入 /agents
+选择 "Create new agent"
+添加描述：审查代码质量、发现潜在Bug、提供优化建议
+选择工具权限：只读（防止误修改代码）
+选择模型：可以用Haiku（快且便宜）</pre>
+                                </div>
+                                <p>之后当你需要代码审查时，Claude会自动调用这个Subagent。关键是：<strong>Subagent有独立的上下文，不会污染主对话</strong>。</p>
+
+                                <h5>踩过的坑</h5>
+                                <ul>
+                                    <li><strong>危险命令会被拦截</strong>：像rm -rf、chmod这种，Claude会提示这是危险操作。如果确定要执行，需要用bash模式。</li>
+                                    <li><strong>后台任务要手动关</strong>：如果你启动了npm run dev，记得用<code>/task</code>查看，然后按k关闭。</li>
+                                    <li><strong>对话可以恢复</strong>：如果你不小心关掉了Claude，下次用<code>claude -c</code>可以恢复到上一个对话。</li>
+                                </ul>
+
+                                <h5>总结</h5>
+                                <p>Claude Code不是一个简单的聊天工具，而是一个真正的AI编程伙伴。它理解项目结构、能执行命令、会自动保存状态。用了两周，我发现自己花在重复性工作上的时间大大减少了。</p>
+
+                                <p>如果你也是开发者，强烈建议试试。记得从确认模式开始，熟悉之后再用高级功能。</p>
+                                <button class="btn-collapse" onclick="toggleArticle(1)">收起文章</button>
+                            </div>
+                        </article>
+
+                        <article class="article-card">
+                            <h3><a href="#" onclick="toggleArticle(2); return false;">Claude Code Skills系统：让你的AI Agent如虎添翼</a></h3>
+                            <div class="meta">
+                                <span><i class="far fa-calendar"></i> 2026-03-10</span>
+                                <span><i class="far fa-folder"></i> 行业分析</span>
+                                <span><i class="far fa-clock"></i> 阅读约12分钟</span>
+                            </div>
+                            <p class="summary">深度解析Claude Code的Skills系统架构，通过实战案例展示如何创建和使用自定义技能...</p>
+                            <button class="btn-expand" onclick="toggleArticle(2)">展开全文</button>
+                            <div class="full-content" id="article-2">
+                                <p>最近我在做一个AI Agent项目，需要处理PDF文档、生成Excel报表、还要自动发布博客。每个需求单独实现都不难，但整合起来就很麻烦。直到我发现了Claude Code的Skills系统——就像找到了一把"瑞士军刀"。</p>
+
+                                <h5>Skills是什么？</h5>
+                                <p>简单说，Skills就是给Claude装上的"专业技能包"。你有没有发现，通用AI什么都能聊，但到了专业领域就露怯了？Skills就是为了解决这个问题。</p>
+
+                                <p>一个Skill本质上是一个Markdown文件，包含三部分：</p>
+                                <ul>
+                                    <li><strong>元数据</strong>：名称、描述、触发条件</li>
+                                    <li><strong>使用说明</strong>：什么场景使用，怎么调用</li>
+                                    <li><strong>具体内容</strong>：可以是提示词模板、代码示例、工作流程</li>
+                                </ul>
+
+                                <h5>内置Skills一览</h5>
+                                <p>Claude Code自带了很多有用的Skills：</p>
+
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; margin:1em 0;">
+                                <table style="width:100%; font-size:0.9em; border-collapse:collapse;">
+                                <tr style="border-bottom:2px solid #ddd;">
+                                    <th style="text-align:left; padding:0.5em;">Skill名称</th>
+                                    <th style="text-align:left; padding:0.5em;">功能</th>
+                                </tr>
+                                <tr><td style="padding:0.5em;">pdf</td><td style="padding:0.5em;">PDF文档处理工具包</td></tr>
+                                <tr><td style="padding:0.5em;">xlsx</td><td style="padding:0.5em;">Excel数据处理和分析</td></tr>
+                                <tr><td style="padding:0.5em;">frontend-design</td><td style="padding:0.5em;">前端界面设计辅助</td></tr>
+                                <tr><td style="padding:0.5em;">skill-creator</td><td style="padding:0.5em;">技能创建工具</td></tr>
+                                <tr><td style="padding:0.5em;">superpowers:writing-plans</td><td style="padding:0.5em;">写作计划工具</td></tr>
+                                </table>
+                                </div>
+
+                                <h5>实战：创建一个博客发布Skill</h5>
+                                <p>我想创建一个自动发布博客的Skill。首先输入：</p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">/skills</pre>
+                                </div>
+                                <p>然后选择创建新Skill。Claude会帮你生成一个模板文件，放在<code>~/.claude/skills/</code>目录下。</p>
+
+                                <p>我创建的<code>blog-publisher.md</code>长这样：</p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.85em;">
+<pre style="margin:0;">---
+name: blog-publisher
+description: 自动收集技术素材、生成文章、发布到博客平台
+---
+
+# 博客发布助手
+
+## 使用场景
+当用户说"帮我写一篇关于XXX的博客"或"发布文章"时调用。
+
+## 工作流程
+1. 收集主题相关的技术素材（可通过联网搜索）
+2. 生成文章大纲
+3. 填充技术内容
+4. 添加代码示例
+5. 格式化为Markdown
+6. 发布到指定平台（如博客园）
+
+## 文章模板
+请按照以下结构生成文章：
+- 引言：引出主题，说明重要性
+- 正文：分步骤讲解，每步配代码示例
+- 总结：要点回顾，延伸思考</pre>
+                                </div>
+
+                                <h5>调用Skill的方式</h5>
+                                <p>有两种方式调用Skill：</p>
+
+                                <p><strong>方式一：自动触发</strong></p>
+                                <p>当你的对话内容匹配Skill的描述时，Claude会自动推荐使用该Skill。</p>
+
+                                <p><strong>方式二：主动调用</strong></p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">/blog-publisher 请帮我写一篇关于Claude Code Subagent的文章</pre>
+                                </div>
+
+                                <h5>Skills vs Subagent：怎么选？</h5>
+                                <p>很多人搞不清Skills和Subagent的区别。我总结了一个对比表：</p>
+
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; margin:1em 0;">
+                                <table style="width:100%; font-size:0.9em; border-collapse:collapse;">
+                                <tr style="border-bottom:2px solid #ddd;">
+                                    <th style="padding:0.5em;"></th>
+                                    <th style="padding:0.5em;">Skill</th>
+                                    <th style="padding:0.5em;">Subagent</th>
+                                </tr>
+                                <tr><td style="padding:0.5em;">上下文</td><td style="padding:0.5em;">共享主对话</td><td style="padding:0.5em;">完全独立</td></tr>
+                                <tr><td style="padding:0.5em;">适用场景</td><td style="padding:0.5em;">简单任务、模板应用</td><td style="padding:0.5em;">复杂任务、需要隔离</td></tr>
+                                <tr><td style="padding:0.5em;">Token消耗</td><td style="padding:0.5em;">计入主对话</td><td style="padding:0.5em;">独立计算</td></tr>
+                                <tr><td style="padding:0.5em;">典型例子</td><td style="padding:0.5em;">生成文档模板</td><td style="padding:0.5em;">代码审查</td></tr>
+                                </table>
+                                </div>
+
+                                <p>我的经验是：</p>
+                                <ul>
+                                    <li>需要<strong>保留上下文</strong>的任务用Skill，比如生成符合项目风格的代码</li>
+                                    <li>需要<strong>隔离上下文</strong>的任务用Subagent，比如代码审查、调试</li>
+                                </ul>
+
+                                <h5>一个实际案例：多Skill协作</h5>
+                                <p>上周我要做一个数据报告，涉及PDF提取、Excel处理、文档生成。我用链式调用完成：</p>
+
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;"># 1. 提取PDF中的数据
+请用pdf技能提取report.pdf中的表格数据
+
+# 2. 分析数据
+请用xlsx技能分析这些数据，生成统计报表
+
+# 3. 生成报告文档
+请用docx技能生成一份完整的分析报告</pre>
+                                </div>
+
+                                <p>三个Skill串联，自动化了本来需要人工操作2小时的工作。</p>
+
+                                <h5>踩过的坑</h5>
+                                <ul>
+                                    <li><strong>Skill描述要具体</strong>：描述太模糊会导致Claude不知道什么时候调用</li>
+                                    <li><strong>避免Skill之间冲突</strong>：多个Skill描述相似时，Claude可能不知道选哪个</li>
+                                    <li><strong>定期更新</strong>：项目规范变了，记得更新对应的Skill</li>
+                                </ul>
+
+                                <h5>最佳实践</h5>
+                                <ol>
+                                    <li><strong>一个Skill只做一件事</strong>：不要把太多功能塞进一个Skill</li>
+                                    <li><strong>描述要包含触发条件</strong>：写清楚什么情况下应该使用这个Skill</li>
+                                    <li><strong>提供示例</strong>：在Skill里放几个使用示例，Claude会学得更快</li>
+                                    <li><strong>版本管理</strong>：把Skills放在git里，方便团队共享</li>
+                                </ol>
+
+                                <h5>总结</h5>
+                                <p>Skills系统让Claude从"通用AI"变成了"专业AI团队"。你不需要每次都从头教Claude怎么做某件事，只需要配置好Skill，它就会自动调用。</p>
+
+                                <p>如果你经常做重复性的技术工作，强烈建议花点时间配置几个Skill。前期投入半小时，后期每次都能省下几十分钟。</p>
+                                <button class="btn-collapse" onclick="toggleArticle(2)">收起文章</button>
+                            </div>
+                        </article>
+
+                        <article class="article-card">
+                            <h3><a href="#" onclick="toggleArticle(3); return false;">Claude Code Subagent实战：打造你的专属AI团队</a></h3>
+                            <div class="meta">
+                                <span><i class="far fa-calendar"></i> 2026-02-28</span>
+                                <span><i class="far fa-folder"></i> 心得体会</span>
+                                <span><i class="far fa-clock"></i> 阅读约8分钟</span>
+                            </div>
+                            <p class="summary">手把手教你创建和使用Subagent，让Claude变成项目经理，把不同任务外包给不同的AI助手...</p>
+                            <button class="btn-expand" onclick="toggleArticle(3)">展开全文</button>
+                            <div class="full-content" id="article-3">
+                                <p>你有没有遇到过这种情况：让Claude帮你review代码，结果对话越来越长，上下文越来越乱，最后还把前面的需求给忘了？</p>
+
+                                <p>这就是普通Claude的痛点：一个AI要干所有的活——写代码、查Bug、写文档、做测试。它不仅累，而且容易搞混上下文。</p>
+
+                                <p>直到我发现了<strong>Subagent</strong>——它可以让Claude像项目经理一样，把不同任务外包给不同的AI助手。</p>
+
+                                <h5>Subagent vs 普通Claude：本质区别</h5>
+                                <p>用一个比喻来说明：</p>
+                                <ul>
+                                    <li><strong>普通Claude</strong> = 万金油员工，什么都能做，但容易分心</li>
+                                    <li><strong>Subagent</strong> = 专职员工，只干一件事，但干得非常专业</li>
+                                </ul>
+
+                                <p>最关键的是：每个Subagent有<strong>独立的上下文</strong>。当代码审查Subagent干活的时候，它不会污染你主对话的上下文。</p>
+
+                                <h5>实战：创建一个代码审查Subagent</h5>
+                                <p>我们来创建一个专门审查代码的Subagent。步骤很简单：</p>
+
+                                <p><strong>第一步：输入命令</strong></p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">/agents</pre>
+                                </div>
+                                <p>选择"Create new agent"。</p>
+
+                                <p><strong>第二步：选择级别</strong></p>
+                                <ul>
+                                    <li><strong>项目级别</strong>：只在当前项目生效</li>
+                                    <li><strong>用户级别</strong>：所有项目都能用（推荐）</li>
+                                </ul>
+
+                                <p><strong>第三步：添加描述</strong></p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">我是一名代码审查专家。
+我的任务是：
+- 检查代码质量和潜在Bug
+- 发现安全隐患（SQL注入、XSS等）
+- 提供优化建议
+- 检查是否符合代码规范
+
+请在需要审查代码质量时调用我。</pre>
+                                </div>
+
+                                <p><strong>第四步：选择工具权限</strong></p>
+                                <p>这里我选择<strong>只读权限</strong>。为什么？因为我只让它审查代码，不让它修改代码。这样可以防止AI误操作。</p>
+
+                                <p style="background:#fff8e6; padding:0.8em; border-radius:4px; font-size:0.9em;">💡 小技巧：如果给Subagent开了编辑权限，一定要确保描述写得非常清楚，否则可能会误改你不想改的文件。</p>
+
+                                <p><strong>第五步：选择模型</strong></p>
+                                <p>可以选择指定模型，或者跟主对话用同样的模型。对于代码审查这种简单任务，我选择Haiku——响应快，成本低。</p>
+
+                                <p><strong>第六步：保存</strong></p>
+                                <p>保存后，会在<code>.claude/agents/</code>目录下生成一个Markdown文件。</p>
+
+                                <h5>使用Subagent的两种方式</h5>
+                                <p><strong>方式一：自动触发</strong></p>
+                                <p>当你对Claude说"帮我审查一下这段代码"，Claude会自动调用你配置的代码审查Subagent。</p>
+
+                                <p><strong>方式二：显式调用</strong></p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">请用code-reviewer审查src/auth.py这个文件</pre>
+                                </div>
+
+                                <h5>进阶技巧：后台执行</h5>
+                                <p>按<code>Ctrl + B</code>可以让Subagent在后台执行。这样你可以继续和Claude主对话交流，当Subagent完成之后会自动通知你。</p>
+
+                                <p>这个功能太实用了！比如我在写代码的同时，让代码审查Subagent在后台审查我之前的代码。两不耽误。</p>
+
+                                <h5>一个真实的工作流</h5>
+                                <p>现在我的开发流程是这样的：</p>
+                                <ol>
+                                    <li>在主对话里和Claude讨论需求、设计方案</li>
+                                    <li>让Claude写代码，我在确认模式下逐步审核</li>
+                                    <li>代码写完后，把代码审查Subagent调出来（后台运行）</li>
+                                    <li>根据审查结果修改代码</li>
+                                    <li>如果需要测试，再调用测试Subagent</li>
+                                </ol>
+
+                                <p>整个过程，主对话的上下文一直保持干净。以前可能200K token都不够用，现在50K就绰绰有余。</p>
+
+                                <h5>我创建的其他Subagent</h5>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; margin:1em 0;">
+                                <table style="width:100%; font-size:0.9em; border-collapse:collapse;">
+                                <tr style="border-bottom:2px solid #ddd;">
+                                    <th style="text-align:left; padding:0.5em;">Subagent</th>
+                                    <th style="text-align:left; padding:0.5em;">职责</th>
+                                    <th style="text-align:left; padding:0.5em;">权限</th>
+                                </tr>
+                                <tr><td style="padding:0.5em;">code-reviewer</td><td style="padding:0.5em;">代码审查</td><td style="padding:0.5em;">只读</td></tr>
+                                <tr><td style="padding:0.5em;">debugger</td><td style="padding:0.5em;">调试疑难Bug</td><td style="padding:0.5em;">只读</td></tr>
+                                <tr><td style="padding:0.5em;">doc-writer</td><td style="padding:0.5em;">生成文档</td><td style="padding:0.5em;">编辑</td></tr>
+                                <tr><td style="padding:0.5em;">test-generator</td><td style="padding:0.5em;">写单元测试</td><td style="padding:0.5em;">编辑</td></tr>
+                                </table>
+                                </div>
+
+                                <h5>Subagent配置文件示例</h5>
+                                <p>生成的配置文件长这样：</p>
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; font-size:0.85em;">
+<pre style="margin:0;">---
+name: code-reviewer
+description: 代码质量和安全审查专家
+model: haiku
+tools: read-only
+---
+
+# 系统提示词
+
+你是一名资深的代码审查专家。请审查用户提供的代码，关注以下方面：
+
+## 质量检查
+- 代码可读性
+- 命名规范
+- 函数职责单一性
+- 注释完整性
+
+## 安全检查
+- SQL注入风险
+- XSS漏洞
+- 敏感信息泄露
+- 权限验证缺失
+
+## 输出格式
+请按以下格式输出审查结果：
+1. 发现的问题（按严重程度排序）
+2. 改进建议
+3. 代码质量评分（1-10）</pre>
+                                </div>
+
+                                <h5>踩过的坑</h5>
+                                <ul>
+                                    <li><strong>描述不够具体</strong>：Claude不知道什么时候该调用这个Subagent</li>
+                                    <li><strong>权限给太宽</strong>：一个只读的Subagent不需要编辑权限</li>
+                                    <li><strong>Subagent太多</strong>：不要创建太多，不然Claude也不知道选哪个</li>
+                                </ul>
+
+                                <h5>最佳实践总结</h5>
+                                <ol>
+                                    <li><strong>一个Subagent只做一件事</strong>：代码审查就是代码审查，不要让它顺便写测试</li>
+                                    <li><strong>使用合适的模型</strong>：简单任务用Haiku省钱，复杂任务用Sonnet</li>
+                                    <li><strong>善用后台执行</strong>：让Subagent在后台干活，不阻塞主对话</li>
+                                    <li><strong>定期清理</strong>：不用的Subagent删掉，保持干净</li>
+                                </ol>
+
+                                <h5>总结</h5>
+                                <p>说实话，Subagent这个功能如果你不用，Claude Code的价值至少少了一半。尤其是做中大型项目的时候，它真的能节省你很多时间和Token。</p>
+
+                                <p>把Claude当成项目经理，把Subagent当成专职员工。你的工作就是协调他们，而不是亲自下场干每一件事。</p>
+                                <button class="btn-collapse" onclick="toggleArticle(3)">收起文章</button>
+                            </div>
+                        </article>
+
+                        <article class="article-card">
+                            <h3><a href="#" onclick="toggleArticle(4); return false;">智能对话系统的应用场景</a></h3>
+                            <div class="meta">
+                                <span><i class="far fa-calendar"></i> 2026-02-20</span>
+                                <span><i class="far fa-folder"></i> 行业分析</span>
+                                <span><i class="far fa-clock"></i> 阅读约7分钟</span>
+                            </div>
+                            <p class="summary">全面解析AI对话技术在各行业的落地案例，从客服到教育再到医疗领域的深度应用实践...</p>
+                            <button class="btn-expand" onclick="toggleArticle(4)">展开全文</button>
+                            <div class="full-content" id="article-4">
+                                <p>去年我参与了一个客服系统的改造项目，让我对AI对话系统的真实能力有了切身体会。今天想分享一些第一手的观察。</p>
+
+                                <h5>一个真实的客服系统改造案例</h5>
+                                <p>这是一家中型电商平台，每天客服咨询量在2万次左右。改造前，他们有50个客服，还是忙不过来。</p>
+
+                                <p>我们做的事情不复杂：</p>
+                                <ol>
+                                    <li>把历史聊天记录（约200万条）喂给AI训练</li>
+                                    <li>整理了500个常见问题及标准答案</li>
+                                    <li>搭建了一个AI + 人工的协作系统</li>
+                                </ol>
+
+                                <p>运行3个月后，数据是这样的：</p>
+
+                                <div style="background:#f5f5f5; padding:1em; border-radius:4px; margin:1em 0;">
+                                <table style="width:100%; font-size:0.9em; border-collapse:collapse;">
+                                <tr style="border-bottom:2px solid #ddd;">
+                                    <th style="text-align:left; padding:0.5em;">指标</th>
+                                    <th style="text-align:right; padding:0.5em;">改造前</th>
+                                    <th style="text-align:right; padding:0.5em;">改造后</th>
+                                </tr>
+                                <tr><td style="padding:0.5em;">人工客服数量</td><td style="text-align:right; padding:0.5em;">50人</td><td style="text-align:right; padding:0.5em;">20人</td></tr>
+                                <tr><td style="padding:0.5em;">平均响应时间</td><td style="text-align:right; padding:0.5em;">3分钟</td><td style="text-align:right; padding:0.5em;">10秒</td></tr>
+                                <tr><td style="padding:0.5em;">客户满意度</td><td style="text-align:right; padding:0.5em;">78%</td><td style="text-align:right; padding:0.5em;">89%</td></tr>
+                                <tr><td style="padding:0.5em;">AI独立解决率</td><td style="text-align:right; padding:0.5em;">-</td><td style="text-align:right; padding:0.5em;">72%</td></tr>
+                                </table>
+                                </div>
+
+                                <p>最关键的是：<strong>客服成本降了60%，客户满意度反而提高了</strong>。</p>
+
+                                <h5>AI能解决什么问题？不能解决什么？</h5>
+                                <p>分析这3个月的数据，我发现：</p>
+
+                                <p><strong>AI擅长的问题（自动解决率>90%）：</strong></p>
+                                <ul>
+                                    <li>订单状态查询："我的包裹到哪了？"</li>
+                                    <li>退换货政策："这个能退吗？"</li>
+                                    <li>产品咨询："这款手机支持5G吗？"</li>
+                                    <li>账户问题："怎么修改密码？"</li>
+                                </ul>
+
+                                <p><strong>AI搞不定的问题（必须转人工）：</strong></p>
+                                <ul>
+                                    <li>情绪激动的投诉："你们这什么破服务！我要投诉！"</li>
+                                    <li>复杂售后："我买了三件，退了两件，用了优惠券，现在差价怎么算？"</li>
+                                    <li>特殊请求："能帮我写个贺卡吗？是送女朋友的。"</li>
+                                </ul>
+
+                                <p>所以我们设计了一个机制：AI检测到用户情绪变差、或者连续两次回答不满意，自动转人工。这样既保证了效率，又不会牺牲体验。</p>
+
+                                <h5>教育领域：我看到的真实场景</h5>
+                                <p>我有个朋友在一家在线教育公司，他们做了一个AI作文批改系统。</p>
+
+                                <p>以前老师改一篇作文要10分钟，现在AI可以秒批：</p>
+
+                                <div style="background:#fff8e6; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">学生作文："今天我和妈妈去公园玩，看到了很多花，有红色的，黄色的，还有白色的，很漂亮。"
+
+AI批改：
+- 总体评价：语句通顺，但可以更丰富
+- 问题标注：
+  ▲ "看到了很多花" → 可以加入形容词，如"五颜六色的花"
+  ▲ 句子结构较单一，建议尝试复杂句
+- 修改建议："今天我和妈妈去公园玩，看到了五颜六色的花。
+  红的像火，黄的似金，白的如雪，真是美极了。"
+- 评分：B+ (82分)</pre>
+                                </div>
+
+                                <p>老师说，AI批改的速度是她的100倍，而且质量稳定。她现在只需要关注AI标记"不确定"的作文，效率提升明显。</p>
+
+                                <h5>医疗领域：谨慎但充满希望</h5>
+                                <p>医疗是AI应用最敏感的领域，也是最有价值的领域之一。</p>
+
+                                <p>我了解到一家三甲医院在试点AI预诊系统。患者挂号前，先和AI对话描述症状：</p>
+
+                                <div style="background:#f0fff0; padding:1em; border-radius:4px; font-size:0.9em;">
+<pre style="margin:0;">患者：我头疼，还有点发烧
+AI：请问发烧多少度？持续几天了？
+患者：昨天开始发烧，38.5度
+AI：除了头疼，还有其他症状吗？比如咳嗽、嗓子疼？
+患者：嗓子有点疼
+AI：根据您的描述，可能是上呼吸道感染。建议挂呼吸内科。
+已为您推荐呼吸内科的专家号源...</pre>
+                                </div>
+
+                                <p>这个系统不会给出诊断结论，而是帮助患者找到合适的科室，减少"挂错号"的情况。数据显示，试点科室的挂号准确率从65%提高到了88%。</p>
+
+                                <h5>踩过的坑</h5>
+                                <p>最后分享几个我们踩过的坑：</p>
+
+                                <p><strong>坑一：数据质量比模型能力更重要</strong></p>
+                                <p>一开始我们用了最新的模型，效果却很差。后来发现是训练数据太乱：同一个问题有十几种问法，答案却互相矛盾。</p>
+
+                                <p>花了一个月整理数据，把500个问题的答案标准化，效果立刻提升了一个档次。AI不是越强越好，而是数据越好越强。</p>
+
+                                <p><strong>坑二：用户不会按你预想的方式提问</strong></p>
+                                <p>我们设计了很多"标准问法"，结果用户根本不这么问。比如：</p>
+                                <ul>
+                                    <li>我们设想："请问如何修改收货地址？"</li>
+                                    <li>用户实际："地址改一下"</li>
+                                    <li>我们设想："请查询订单物流信息"</li>
+                                    <li>用户实际："货到哪了"</li>
+                                </ul>
+
+                                <p>后来我们专门收集了用户的真实问法，重新训练，系统才真正好用起来。</p>
+
+                                <p><strong>坑三：AI也会"一本正经胡说八道"</strong></p>
+                                <p>有一次AI告诉用户"24小时内可以无条件退款"，但这根本不是公司的政策。我们紧急排查，发现是训练数据里有一条客服对话记错了。</p>
+
+                                <p>现在我们对所有涉及政策的回答，都会加一道人工审核，确保AI不会乱承诺。</p>
+
+                                <h5>写在最后</h5>
+                                <p>AI对话系统不是银弹，它不能解决所有问题。但在那些重复性高、标准化程度高的场景里，它确实能创造巨大价值。</p>
+
+                                <p>关键是：不要想着用AI完全替代人，而是用AI解决80%的简单问题，让人去处理那20%真正需要人类判断的问题。</p>
+                                <button class="btn-collapse" onclick="toggleArticle(4)">收起文章</button>
+                            </div>
+                        </article>
+
+                        <article class="article-card">
+                            <h3><a href="#" onclick="toggleArticle(5); return false;">关于人工智能伦理的思考</a></h3>
+                            <div class="meta">
+                                <span><i class="far fa-calendar"></i> 2026-02-10</span>
+                                <span><i class="far fa-folder"></i> 心得体会</span>
+                                <span><i class="far fa-clock"></i> 阅读约9分钟</span>
+                            </div>
+                            <p class="summary">深度探讨AI发展中的伦理问题与应对策略，思考技术进步与社会责任之间的平衡之道...</p>
+                            <button class="btn-expand" onclick="toggleArticle(5)">展开全文</button>
+                            <div class="full-content" id="article-5">
+                                <p>去年发生的一件事，让我开始认真思考AI伦理这个问题。</p>
+
+                                <h5>从一个真实的面试场景说起</h5>
+                                <p>我朋友在一家互联网公司做HR，他们用AI系统筛选简历。有一次，他发现一个奇怪的现象：系统自动过滤掉了所有名字里带"芳"字的女性候选人。</p>
+
+                                <p>查了一下才发现，训练数据里，名字带"芳"的候选人大多来自某个特定地区，学历和经验普遍不符合要求。AI学到了这个"规律"，然后把它泛化成了一个荒谬的规则：名字带"芳"的一律不要。</p>
+
+                                <p>这就是典型的<strong>算法偏见</strong>。AI不懂得什么是公平，它只是在数据中发现模式。如果数据本身带有偏见，AI就会放大这种偏见。</p>
+
+                                <h5>数据偏见的具体案例</h5>
+                                <p>这几年，类似的案例层出不穷：</p>
+
+                                <p><strong>案例一：亚马逊的招聘AI</strong></p>
+                                <p>2018年，亚马逊被迫关闭了一个AI招聘工具。原因是这个AI明显歧视女性：它会惩罚简历中出现"女子足球队"、"女子学院"等字眼的候选人。</p>
+
+                                <p>原因很简单：训练数据来自过去10年的简历，而亚马逊的技术团队过去以男性为主。AI学到了"男性=更可能被录用"这个"规律"。</p>
+
+                                <p><strong>案例二：面部识别的种族差异</strong></p>
+                                <p>2018年的一项研究发现，商业面部识别系统对深色皮肤人群的错误率高达35%，而对浅色皮肤人群只有1%。原因是训练数据中白人面孔占绝大多数。</p>
+
+                                <p>这意味着什么？一个黑人可能因为面部识别错误被错误地标记为犯罪嫌疑人。这不是科幻小说，已经有真实案例发生。</p>
+
+                                <h5>隐私：那些我们没意识到的"出卖"</h5>
+                                <p>上个月我注册一个App，弹出一堆权限请求：通讯录、相册、位置、麦克风……我随手点了"允许"。</p>
+
+                                <p>后来我仔细想了一下，这个App真的需要这些权限吗？它是一个记账软件，为什么要我的通讯录？</p>
+
+                                <p>更可怕的是AI时代的数据"关联分析"：</p>
+                                <ul>
+                                    <li>你的位置数据可以推断你的作息规律</li>
+                                    <li>你的购物记录可以推断你的收入水平</li>
+                                    <li>你的社交网络可以推断你的政治倾向</li>
+                                </ul>
+
+                                <p>单独看每条数据，似乎没什么。但当AI把这些数据关联起来，它对你的了解可能比你自己还清楚。</p>
+
+                                <p>去年有一条新闻：某外卖平台被发现根据用户的历史订单，给不同用户显示不同的价格。经常点外卖、不太比价的用户，看到的价格更高。这就是所谓的<strong>大数据杀熟</strong>。</p>
+
+                                <h5>AI说谎：一个让我后怕的经历</h5>
+                                <p>有一次，我让Claude帮我查一个技术文档的具体参数。它给出了一个非常详细的数据表格，包括版本号、发布日期、性能指标等。</p>
+
+                                <p>我直接用了。直到上线前测试，才发现那个版本根本不存在。回去查官方文档，才发现Claude"编"了一堆看似合理但实际上不存在的信息。</p>
+
+                                <p>这就是所谓的<strong>AI幻觉（Hallucination）</strong>。</p>
+
+                                <p>更严重的是，AI有时候会非常自信地说一些完全错误的话。在医疗、法律、金融等领域，这种错误可能是致命的。</p>
+
+                                <p>去年美国有个律师用ChatGPT写法律文书，结果ChatGPT编造了6个根本不存在的案例。这位律师差点被吊销执照。</p>
+
+                                <h5>我认识的一位AI研究员怎么说</h5>
+                                <p>我有个朋友在某大厂做AI安全研究。聊到这个问题时，他说了一段话让我印象深刻：</p>
+
+                                <div style="background:#f0f8ff; padding:1.5em; border-radius:8px; margin:1em 0; font-style:italic; border-left:4px solid #4eb980;">
+                                "我们现在就像在造一辆汽车，引擎越来越强劲，但刹车系统还没跟上。问题不是要不要踩刹车，而是谁来踩、什么时候踩、踩多重。"
+                                </div>
+
+                                <p>他告诉我，业内正在研究的方向包括：</p>
+                                <ul>
+                                    <li><strong>可解释AI</strong>：让AI的决策过程可追溯、可解释，而不是"黑盒"</li>
+                                    <li><strong>对抗测试</strong>：专门找人来"攻击"AI系统，发现潜在问题</li>
+                                    <li><strong>人类在环</strong>：重要决策必须有人类参与确认</li>
+                                </ul>
+
+                                <h5>作为普通人，我们能做什么？</h5>
+                                <p>说了这么多问题，我不是要否定AI的价值。而是想说：<strong>了解这些风险，能让我们更聪明地使用AI</strong>。</p>
+
+                                <p>我自己的几个原则：</p>
+                                <ol>
+                                    <li><strong>验证重要信息</strong>：AI给的任何事实性信息，尤其是数字、日期、引用，都要自己核实</li>
+                                    <li><strong>保护隐私</strong>：不把敏感信息（身份证、密码、公司机密）输入AI</li>
+                                    <li><strong>保持怀疑</strong>：如果AI的回答看起来"太完美"或"太巧合"，多问几个为什么</li>
+                                    <li><strong>了解原理</strong>：大致了解AI是怎么工作的，知道它的能力边界</li>
+                                </ol>
+
+                                <h5>写在最后</h5>
+                                <p>AI不会消失，它只会越来越强大。与其恐惧或盲从，不如学会与它共处，同时保持清醒。</p>
+
+                                <p>技术本身是中性的，关键在于人如何使用它。每个人都是这个时代的参与者，我们的选择和行动，将决定AI最终会成为帮助人类的工具，还是失控的风险。</p>
+                                <button class="btn-collapse" onclick="toggleArticle(5)">收起文章</button>
+                            </div>
+                        </article>
+
+                    </div>
+
+                    <!-- Sidebar -->
+                    <aside id="sidebar">
+                        <h4><i class="fas fa-folder-tree"></i> 分类</h4>
+                        <ul class="category-list">
+                            <li><a href="#" onclick="filterByCategory('tech'); return false;"><i class="fas fa-book"></i> 技术教程</a> <span class="badge">2</span></li>
+                            <li><a href="#" onclick="filterByCategory('analysis'); return false;"><i class="fas fa-chart-line"></i> 行业分析</a> <span class="badge">1</span></li>
+                            <li><a href="#" onclick="filterByCategory('thoughts'); return false;"><i class="fas fa-lightbulb"></i> 心得体会</a> <span class="badge">2</span></li>
+                        </ul>
+
+                        <h4><i class="fas fa-tags"></i> 标签</h4>
+                        <div class="tags">
+                            <a href="#" class="tag" onclick="filterByTag('AI'); return false;"><i class="fas fa-terminal"></i> Claude Code</a>
+                            <a href="#" class="tag" onclick="filterByTag('Claude'); return false;"><i class="fas fa-robot"></i> AI Agent</a>
+                            <a href="#" class="tag" onclick="filterByTag('大模型'); return false;"><i class="fas fa-users-gear"></i> Subagent</a>
+                            <a href="#" class="tag" onclick="filterByTag('编程'); return false;"><i class="fas fa-wand-magic-sparkles"></i> Skills</a>
+                            <a href="#" class="tag" onclick="filterByTag('伦理'); return false;"><i class="fas fa-plug"></i> MCP</a>
+                        </div>
+
+                        <h4><i class="fas fa-link"></i> 友情链接</h4>
+                        <ul class="links-list">
+                            <li><a href="#">Claude 官方文档</a></li>
+                            <li><a href="#">Anthropic 博客</a></li>
+                            <li><a href="#">GitHub Trending</a></li>
+                        </ul>
+                    </aside>
+
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about">
+                <header class="major">
+                    <h2>关于我</h2>
+                </header>
+                <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                    <p style="font-size: 1.1em;">我是一名热爱技术的开发者，专注于人工智能和大语言模型的应用研究与探索。在过去的几年里，我深入实践了各种AI工具的使用，从最初的尝试到如今的深度依赖，AI已经彻底改变了我的工作方式。</p>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2em; margin: 2em 0; text-align: left;">
+                        <div style="background: #f8f8f8; padding: 1.5em; border-radius: 8px;">
+                            <h4 style="color: #4eb980; margin-bottom: 0.5em;">技术领域</h4>
+                            <p style="margin: 0; font-size: 0.95em;">大语言模型应用、提示工程、AI辅助开发、智能对话系统设计</p>
+                        </div>
+                        <div style="background: #f8f8f8; padding: 1.5em; border-radius: 8px;">
+                            <h4 style="color: #4eb980; margin-bottom: 0.5em;">编程语言</h4>
+                            <p style="margin: 0; font-size: 0.95em;">Python、JavaScript、TypeScript、Go、SQL</p>
+                        </div>
+                        <div style="background: #f8f8f8; padding: 1.5em; border-radius: 8px;">
+                            <h4 style="color: #4eb980; margin-bottom: 0.5em;">关注方向</h4>
+                            <p style="margin: 0; font-size: 0.95em;">AI安全与伦理、效率工具开发、开源社区贡献</p>
+                        </div>
+                    </div>
+
+                    <p>本博客主要分享我在使用AI工具过程中的心得体会，以及对行业发展的观察与思考。我相信，AI正在重塑我们的工作方式，而理解并善用这些工具，将是未来每个人都需要掌握的能力。</p>
+                    <p style="color: #4eb980; font-weight: 600; font-size: 1.1em; margin-top: 1.5em;">欢迎交流讨论，共同探索AI的无限可能！</p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer">
+        <div class="container medium">
+            <h2>感谢阅读</h2>
+            <p>希望这些内容对你有所帮助，欢迎持续关注本博客获取更多技术分享。</p>
+            <div class="copyright">
+                <p>版权所有 © 2026 技术博客</p>
+                <p>ICP备案号：<span>[待填写]</span></p>
+                <p>联系邮箱：contact@example.com</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to top button -->
+    <button id="scroll-top" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Inline JavaScript for interactions -->
+    <script>
+        // Toggle article expand/collapse
+        function toggleArticle(id) {
+            var content = document.getElementById('article-' + id);
+            var btn = content.previousElementSibling;
+
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                btn.textContent = '展开全文';
+                btn.style.display = 'inline-block';
+            } else {
+                content.classList.add('show');
+                btn.style.display = 'none';
+            }
+        }
+
+        // Set active navigation
+        function setActiveNav(el) {
+            var links = document.querySelectorAll('.nav-link');
+            links.forEach(function(link) {
+                link.classList.remove('active');
+            });
+            el.classList.add('active');
+        }
+
+        // Scroll to section
+        function scrollToSection(id) {
+            var section = document.getElementById(id);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Show/hide scroll to top button
+        window.addEventListener('scroll', function() {
+            var scrollBtn = document.getElementById('scroll-top');
+            if (window.scrollY > 300) {
+                scrollBtn.classList.add('show');
+            } else {
+                scrollBtn.classList.remove('show');
+            }
+        });
+
+        // Filter by category (placeholder - just scroll to articles)
+        function filterByCategory(category) {
+            scrollToSection('articles');
+            // In a real implementation, this would filter the articles
+        }
+
+        // Filter by tag (placeholder - just scroll to articles)
+        function filterByTag(tag) {
+            scrollToSection('articles');
+            // In a real implementation, this would filter the articles
+        }
+    </script>
+
+</body>
+</html>
