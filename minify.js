@@ -1,4 +1,5 @@
 const { minify } = require('html-minifier-terser');
+const CleanCSS = require('clean-css');
 const fs = require('fs');
 const path = require('path');
 
@@ -7,16 +8,29 @@ const outputFile = path.join(__dirname, 'index.min.html');
 
 async function minifyHtml() {
     try {
-        const html = fs.readFileSync(inputFile, 'utf8');
+        let html = fs.readFileSync(inputFile, 'utf8');
 
+        // 先压缩内联CSS
+        const cleanCss = new CleanCSS({
+            level: 2,
+            compatibility: '*',
+            format: false
+        });
+
+        // 提取并压缩所有<style>标签内的CSS
+        html = html.replace(/<style>([\s\S]*?)<\/style>/gi, (match, css) => {
+            const minifiedCss = cleanCss.minify(css).styles;
+            return `<style>${minifiedCss}</style>`;
+        });
+
+        // 然后压缩HTML
         const minified = await minify(html, {
             collapseWhitespace: true,
             removeComments: true,
             removeRedundantAttributes: true,
             removeEmptyAttributes: true,
-            removeOptionalTags: true,
+            removeOptionalTags: false,
             collapseBooleanAttributes: true,
-            minifyCss: true,
             minifyJs: true,
             useShortDoctype: true,
             removeAttributeQuotes: true,

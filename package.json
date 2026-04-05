@@ -5,6 +5,7 @@
     "minify": "node minify.js"
   },
   "devDependencies": {
-    "html-minifier-terser": "^7.2.0"
+    "html-minifier-terser": "^7.2.0",
+    "clean-css": "^5.3.3"
   }
 }
